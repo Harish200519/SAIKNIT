@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice - SAI KNITS</title>
+    <style>
+        :root { --emerald: #00ff88; --dark: #050a0a; --gray: #1e293b; }
+        body { margin: 0; background: var(--dark); font-family: 'Segoe UI', sans-serif; color: white; display: flex; flex-direction: column; align-items: center; padding: 40px 0; }
+        
+        .invoice-box { 
+            background: white; 
+            color: black; 
+            width: 800px; 
+            padding: 50px; 
+            border-radius: 5px; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.5); 
+            position: relative;
+        }
+
+        .header { display: flex; justify-content: space-between; border-bottom: 3px solid var(--emerald); padding-bottom: 20px; }
+        .logo-section h1 { margin: 0; font-size: 32px; letter-spacing: 2px; }
+        .logo-section p { margin: 5px 0; font-size: 12px; color: #666; font-weight: bold; }
+
+        .inv-details { display: flex; justify-content: space-between; margin-top: 30px; font-size: 14px; }
+        .client-info h3 { margin: 0 0 10px 0; color: #333; }
+        .client-info p { margin: 2px 0; white-space: pre-wrap; }
+
+        .table-section { margin-top: 40px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8fafc; text-align: left; padding: 12px; border-bottom: 2px solid #e2e8f0; font-size: 12px; text-transform: uppercase; }
+        td { padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+
+        .totals-section { margin-top: 30px; display: flex; justify-content: flex-end; }
+        .totals-table { width: 250px; }
+        .totals-table div { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+        .grand-total { border-top: 2px solid var(--emerald); margin-top: 10px; padding-top: 10px !important; font-weight: bold; font-size: 18px !important; color: var(--emerald); }
+
+        .btn-group { margin-top: 40px; display: flex; gap: 20px; }
+        .btn { padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
+        .btn-print { background: var(--emerald); color: black; }
+        .btn-back { background: var(--gray); color: white; }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            .btn-group { display: none; }
+            .invoice-box { box-shadow: none; border: none; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="invoice-box" id="invoice">
+        <div class="header">
+            <div class="logo-section">
+                <h1>SAI KNITS</h1>
+                <p>PREMIUM TEXTILE KNITTING UNIT</p>
+                <div style="font-size: 10px; margin-top: 10px;">
+                    123/A, Industrial Estate, Tiruppur - 641602<br>
+                    GSTIN: 33AAAAA1234A1Z1 | PH: +91 98765 43210
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <h2 style="color: var(--emerald); margin: 0;">INVOICE</h2>
+                <p id="invNoDisplay" style="font-weight: bold; margin: 10px 0 0 0;"></p>
+                <p id="dateDisplay" style="font-size: 14px; color: #666; margin: 5px 0 0 0;"></p>
+            </div>
+        </div>
+
+        <div class="inv-details">
+            <div class="client-info">
+                <p style="text-transform: uppercase; color: #94a3b8; font-size: 10px; font-weight: bold; margin-bottom: 5px;">Billed To:</p>
+                <h3 id="clientName"></h3>
+                <p id="clientAddr"></p>
+            </div>
+            <div style="text-align: right;">
+                <p style="text-transform: uppercase; color: #94a3b8; font-size: 10px; font-weight: bold; margin-bottom: 5px;">Job Info:</p>
+                <p id="vehicleInfo" style="font-weight: bold;"></p>
+            </div>
+        </div>
+
+        <div class="table-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th width="45%">Description</th>
+                        <th width="20%">Type/Count</th>
+                        <th width="15%">Weight</th>
+                        <th width="20%" style="text-align: right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsBody"></tbody>
+            </table>
+        </div>
+
+        <div class="totals-section">
+            <div class="totals-table">
+                <div><span>Subtotal</span><span id="grossDisp"></span></div>
+                <div><span>Tax (GST 5%)</span><span id="taxDisp"></span></div>
+                <div class="grand-total"><span>Total Amount</span><span id="grandDisp"></span></div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 100px; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 10px;">
+            Terms: Payment within 30 days. This is a computer generated invoice.
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn btn-back" onclick="location.href='dashboard.html'">Back to Reports</button>
+        <button class="btn btn-print" onclick="window.print()">Print Invoice</button>
+    </div>
+
+    <script>
+        window.onload = () => {
+            const data = JSON.parse(sessionStorage.getItem("viewInvoiceData"));
+            if (!data) {
+                alert("No invoice data found.");
+                window.location.href = "dashboard.html";
+                return;
+            }
+
+            document.getElementById("invNoDisplay").innerText = "No: " + data.invNo;
+            document.getElementById("dateDisplay").innerText = "Date: " + data.date;
+            document.getElementById("clientName").innerText = data.customer;
+            document.getElementById("clientAddr").innerText = data.address;
+            document.getElementById("vehicleInfo").innerText = "Vehicle/DC: " + (data.vehicle || "N/A");
+
+            const itemsBody = document.getElementById("itemsBody");
+            data.items.forEach(item => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${item.desc}</td>
+                    <td>${item.hsn}</td>
+                    <td>${item.qty} Kgs</td>
+                    <td style="text-align: right;">₹ ${parseFloat(item.total).toLocaleString()}</td>
+                `;
+                itemsBody.appendChild(row);
+            });
+
+            document.getElementById("grossDisp").innerText = "₹ " + parseFloat(data.gross).toLocaleString();
+            const tax = parseFloat(data.gross) * 0.05;
+            document.getElementById("taxDisp").innerText = "₹ " + tax.toLocaleString();
+            document.getElementById("grandDisp").innerText = "₹ " + parseFloat(data.grandTotal).toLocaleString();
+        };
+    </script>
+</body>
+</html>

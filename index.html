@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAI KNITS | Premium Textile Management</title>
+    <style>
+        :root { 
+            --emerald: #00ff88; 
+            --dark-bg: #050a0a; 
+            --glow: rgba(0, 255, 136, 0.3);
+        }
+
+        body { 
+            margin: 0; 
+            background: var(--dark-bg); 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+            overflow: hidden; 
+        }
+
+        /* Glowing Navigation Bar */
+        .navbar { 
+            width: 100%; 
+            display: flex; 
+            justify-content: center; 
+            gap: 25px; 
+            padding: 20px 0; 
+            background: rgba(0, 20, 15, 0.8); 
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--emerald); 
+            box-shadow: 0 0 20px var(--glow);
+            position: fixed; 
+            top: 0; 
+            z-index: 1000; 
+        }
+
+        .navbar a { 
+            color: #d1ffd1; 
+            text-decoration: none; 
+            padding: 8px 20px; 
+            border-radius: 20px; 
+            transition: 0.4s; 
+            font-weight: bold; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+
+        .navbar a:hover { 
+            background: var(--emerald); 
+            color: #000; 
+            box-shadow: 0 0 25px var(--emerald); 
+        }
+
+        /* Animated Background Elements */
+        .glow-circle {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+            z-index: 0;
+            filter: blur(50px);
+            animation: move 15s infinite alternate;
+        }
+
+        @keyframes move {
+            from { transform: translate(-20%, -20%); }
+            to { transform: translate(20%, 20%); }
+        }
+
+        .bg-text { 
+            position: absolute; 
+            width: 100%; 
+            text-align: center; 
+            font-size: 15vw; 
+            font-weight: 900; 
+            color: rgba(0, 255, 136, 0.03); 
+            text-transform: uppercase;
+            user-select: none; 
+            z-index: 1; 
+        }
+
+        /* Main Glass Container */
+        .container { 
+            position: relative; 
+            z-index: 2; 
+            background: rgba(10, 25, 20, 0.7); 
+            backdrop-filter: blur(15px); 
+            padding: 70px 50px; 
+            border-radius: 30px; 
+            text-align: center; 
+            border: 1px solid rgba(0, 255, 136, 0.2); 
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 255, 136, 0.1); 
+            margin-top: 180px; 
+            max-width: 500px;
+        }
+
+        h1 { 
+            font-size: 50px; 
+            color: var(--emerald); 
+            margin: 0; 
+            text-shadow: 0 0 20px var(--emerald);
+            letter-spacing: 4px;
+        }
+
+        p { 
+            margin-top: 15px; 
+            color: #a0c0b0; 
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        /* Glowing Button */
+        .main-btn { 
+            margin-top: 40px; 
+            padding: 18px 50px; 
+            background: transparent; 
+            border: 2px solid var(--emerald); 
+            color: var(--emerald); 
+            border-radius: 50px; 
+            cursor: pointer; 
+            transition: 0.4s; 
+            font-weight: bold; 
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-btn:hover { 
+            background: var(--emerald); 
+            color: #050a0a; 
+            box-shadow: 0 0 40px var(--emerald); 
+            transform: translateY(-5px); 
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            font-size: 12px;
+            color: rgba(0, 255, 136, 0.4);
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-circle" style="top: 10%; left: 10%;"></div>
+    <div class="glow-circle" style="bottom: 10%; right: 10%; animation-delay: -5s;"></div>
+
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <a href="companydetails.html">Customer List</a>
+        <a href="billing.html">Billing</a>
+        <a href="dashboard.html">Reports</a>
+        <a href="history.html">History</a>
+    </div>
+
+    <div class="bg-text" style="top:25%">SAI</div>
+    <div class="bg-text" style="top:50%">KNITS</div>
+
+    <div class="container">
+        <h1>SAI KNITS</h1>
+        <p>Precision Knitting Unit & Job Work Management</p>
+        <button class="main-btn" onclick="location.href='companydetails.html'">Get Started</button>
+    </div>
+
+    <div class="footer">POWERED BY SAI KNITS DIGITAL ENGINE</div>
+
+</body>
+</html>

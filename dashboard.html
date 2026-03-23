@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reports & Analytics | SAI KNITS</title>
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="firebase.js"></script>
+    <style>
+        :root { --emerald: #00ff88; --dark: #050a0a; --glow: rgba(0, 255, 136, 0.15); }
+        body { margin: 0; background: var(--dark); font-family: 'Segoe UI', sans-serif; color: white; padding-top: 100px; }
+        
+        .navbar { width: 100%; display: flex; justify-content: center; gap: 25px; padding: 20px 0; background: rgba(0,20,15,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--emerald); position: fixed; top: 0; z-index: 1000; }
+        .navbar a { color: #d1ffd1; text-decoration: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; text-transform: uppercase; font-size: 14px; }
+        .navbar a:hover { background: var(--emerald); color: black; box-shadow: 0 0 20px var(--emerald); }
+
+        .container { max-width: 1100px; margin: auto; padding: 20px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 40px; }
+        .stat-card { 
+            background: rgba(16, 185, 129, 0.05); 
+            padding: 30px; 
+            border-radius: 20px; 
+            border: 1px solid rgba(0, 255, 136, 0.2); 
+            text-align: center;
+            transition: 0.3s;
+        }
+        .stat-card:hover { border-color: var(--emerald); box-shadow: 0 0 25px var(--glow); transform: translateY(-5px); }
+        .stat-card h3 { margin: 0; color: #a0c0b0; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; }
+        .stat-card p { margin: 15px 0 0; font-size: 32px; font-weight: bold; color: var(--emerald); text-shadow: 0 0 10px var(--emerald); }
+
+        .report-box { background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
+        .box-header { padding: 20px; background: rgba(0,255,136,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .row { display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; align-items: center; }
+        .row:hover { background: rgba(255,255,255,0.03); }
+        
+        .badge { background: var(--emerald); color: black; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .btn-view { background: transparent; border: 1px solid var(--emerald); color: var(--emerald); padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-view:hover { background: var(--emerald); color: black; }
+        
+        .empty-msg { padding: 50px; text-align: center; color: #555; font-style: italic; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html">Home</a>
+        <a href="companydetails.html">Customers</a>
+        <a href="billing.html">New Bill</a>
+        <a href="dashboard.html" style="color:var(--emerald)">Reports</a>
+        <a href="history.html">History</a>
+    </nav>
+
+    <div class="container">
+        <h1 style="color: var(--emerald); letter-spacing: 2px; text-transform: uppercase;">Business Summary</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Production</h3>
+                <p id="totalWeight">0.00 Kgs</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Revenue</h3>
+                <p id="totalRev">₹ 0.00</p>
+            </div>
+            <div class="stat-card">
+                <h3>Bills Generated</h3>
+                <p id="totalCount">0</p>
+            </div>
+        </div>
+
+        <div class="report-box">
+            <div class="box-header">
+                <span style="font-weight:bold; color:var(--emerald); letter-spacing: 1px;">RECENT CLOUD ENTRIES</span>
+                <span class="badge" id="cloudStatus">SAI KNITS CLOUD ACTIVE</span>
+            </div>
+            <div id="displayList">
+                <div class="empty-msg">Fetching records...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentHistory = [];
+
+        async function loadDashboard() {
+            const listContainer = document.getElementById("displayList");
+            const cloudStatus = document.getElementById("cloudStatus");
+            
+            try {
+                currentHistory = await window._firebase.getInvoices();
+                
+                if (currentHistory.length === 0) {
+                    listContainer.innerHTML = '<div class="empty-msg">No cloud records found. Start billing to see reports.</div>';
+                    return;
+                }
+
+                let weight = 0;
+                let revenue = 0;
+
+                listContainer.innerHTML = currentHistory.map((inv, index) => {
+                    revenue += parseFloat(inv.grandTotal) || 0;
+                    
+                    let rowWeight = 0;
+                    inv.items.forEach(item => {
+                        rowWeight += parseFloat(item.qty) || 0;
+                    });
+                    weight += rowWeight;
+
+                    return `
+                        <div class="row">
+                            <div>
+                                <div style="font-weight:bold; font-size:16px;">${inv.customer}</div>
+                                <div style="color:#a0c0b0; font-size:12px;">Inv: ${inv.invNo} | Date: ${inv.date}</div>
+                            </div>
+                            <div style="text-align:right; display: flex; align-items: center; gap: 30px;">
+                                <div>
+                                    <div style="color:var(--emerald); font-weight:bold; font-size:18px;">₹ ${parseFloat(inv.grandTotal).toLocaleString()}</div>
+                                    <div style="font-size:11px; color:#555;">${rowWeight.toFixed(2)} Kgs</div>
+                                </div>
+                                <button class="btn-view" onclick="viewInv(${index})">OPEN</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById("totalWeight").innerText = weight.toFixed(2) + " Kgs";
+                document.getElementById("totalRev").innerText = "₹ " + revenue.toLocaleString(undefined, {minimumFractionDigits: 2});
+                document.getElementById("totalCount").innerText = currentHistory.length;
+                cloudStatus.innerText = "CLOUD SYNCED: " + currentHistory.length + " RECORDS";
+
+            } catch (err) {
+                listContainer.innerHTML = `<div class="empty-msg" style="color:#ff4444">Failed to connect to cloud: ${err.message}</div>`;
+                cloudStatus.style.background = "#ff4444";
+                cloudStatus.innerText = "CLOUD DISCONNECTED";
+            }
+        }
+
+        function viewInv(index) {
+            sessionStorage.setItem("viewInvoiceData", JSON.stringify(currentHistory[index]));
+            window.location.href = "invoice.html";
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>

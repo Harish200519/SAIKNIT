@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Records | SAI KNITS</title>
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="firebase.js"></script>
+    <style>
+        :root { --emerald: #00ff88; --dark: #050a0a; }
+        body { margin: 0; background: var(--dark); font-family: 'Segoe UI', sans-serif; color: white; padding-top: 100px; display: flex; flex-direction: column; align-items: center; }
+        .navbar { width: 100%; display: flex; justify-content: center; gap: 20px; padding: 15px 0; background: #0a1a15; border-bottom: 1px solid var(--emerald); position: fixed; top: 0; }
+        .navbar a { color: #d1ffd1; text-decoration: none; font-weight: bold; }
+        table { width: 90%; max-width: 1000px; border-collapse: collapse; }
+        th { background: var(--emerald); color: black; padding: 12px; }
+        td { padding: 12px; border-bottom: 1px solid #333; text-align: center; }
+        .loading { color: var(--emerald); margin: 20px; }
+    </style>
+</head>
+<body>
+    <div class="navbar"><a href="index.html">Home</a> <a href="companydetails.html">Customers</a> <a href="billing.html">New Bill</a> <a href="history.html" style="color:var(--emerald)">Records</a></div>
+    
+    <h2 style="color:var(--emerald); text-transform:uppercase; letter-spacing:2px;">Knitting Job History (Cloud)</h2>
+    <div id="loading" class="loading">Loading records from cloud...</div>
+    <table>
+        <thead>
+            <tr><th>Inv No</th><th>Date</th><th>Customer</th><th>Amount</th><th>Action</th></tr>
+        </thead>
+        <tbody id="histBody"></tbody>
+    </table>
+
+    <script>
+        let cloudHistory = [];
+
+        async function loadHistory() {
+            const body = document.getElementById("histBody");
+            const loading = document.getElementById("loading");
+            try {
+                cloudHistory = await window._firebase.getInvoices();
+                loading.style.display = "none";
+                
+                if (cloudHistory.length === 0) {
+                    body.innerHTML = '<tr><td colspan="5">No records found.</td></tr>';
+                    return;
+                }
+
+                body.innerHTML = cloudHistory.map((b, i) => `
+                    <tr>
+                        <td>${b.invNo}</td>
+                        <td>${b.date}</td>
+                        <td>${b.customer}</td>
+                        <td style="color:var(--emerald)">₹ ${parseFloat(b.grandTotal).toLocaleString()}</td>
+                        <td><button style="background:var(--emerald); border:none; padding:5px 15px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick='view(${i})'>VIEW</button></td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                loading.innerText = "Error: " + err.message;
+            }
+        }
+
+        function view(index) {
+            sessionStorage.setItem("viewInvoiceData", JSON.stringify(cloudHistory[index]));
+            window.location.href = "invoice.html";
+        }
+
+        loadHistory();
+    </script>
+</body>
+</html>

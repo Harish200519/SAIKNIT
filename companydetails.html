@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Directory | SAI KNITS</title>
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="firebase.js"></script>
+    <style>
+        :root { --emerald: #00ff88; --dark: #050a0a; --glow: rgba(0, 255, 136, 0.2); }
+        body { margin: 0; background: var(--dark); font-family: 'Segoe UI', sans-serif; color: white; padding-top: 100px; display: flex; flex-direction: column; align-items: center; }
+        
+        .navbar { width: 100%; display: flex; justify-content: center; gap: 25px; padding: 20px 0; background: rgba(0, 20, 15, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--emerald); position: fixed; top: 0; z-index: 1000; box-shadow: 0 0 20px var(--glow); }
+        .navbar a { color: #d1ffd1; text-decoration: none; padding: 8px 20px; border-radius: 20px; transition: 0.3s; font-weight: bold; font-size: 14px; text-transform: uppercase; }
+        .navbar a:hover { background: var(--emerald); color: black; box-shadow: 0 0 20px var(--emerald); }
+
+        .header-section { width: 90%; max-width: 1000px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        
+        .search-container { flex-grow: 1; margin-right: 20px; }
+        #searchBar { width: 100%; padding: 15px; background: #0a1a15; border: 1px solid var(--emerald); color: white; border-radius: 10px; font-size: 16px; outline: none; }
+
+        .btn-add-new { background: var(--emerald); color: black; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 0 15px var(--glow); }
+        .btn-add-new:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--emerald); }
+
+        .customer-grid { width: 90%; max-width: 1000px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding-bottom: 50px; }
+        .customer-card { background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(0, 255, 136, 0.2); padding: 20px; border-radius: 15px; cursor: pointer; transition: 0.3s; position: relative; }
+        .customer-card:hover { border-color: var(--emerald); box-shadow: 0 0 20px var(--glow); }
+        .card-actions { display: none; margin-top: 15px; gap: 10px; }
+        .customer-card:hover .card-actions { display: flex; }
+        .btn-delete { background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; }
+        
+        /* Modal Styles */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: #0a1a15; border: 1px solid var(--emerald); padding: 40px; border-radius: 20px; width: 400px; box-shadow: 0 0 50px var(--glow); }
+        .modal-content h2 { color: var(--emerald); margin-top: 0; }
+        .modal-content input { width: 100%; padding: 12px; margin: 10px 0; background: #050a0a; border: 1px solid #334155; color: white; border-radius: 5px; box-sizing: border-box; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-save { background: var(--emerald); color: black; border: none; padding: 12px; flex: 1; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .btn-cancel { background: #334155; color: white; border: none; padding: 12px; flex: 1; border-radius: 5px; cursor: pointer; }
+        
+        .loading { text-align: center; color: var(--emerald); font-style: italic; margin-top: 50px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html">Home</a>
+        <a href="companydetails.html" style="color:var(--emerald)">Customer List</a>
+        <a href="billing.html">Billing</a>
+        <a href="dashboard.html">Reports</a>
+        <a href="history.html">History</a>
+    </nav>
+
+    <div class="header-section">
+        <h2 style="color:var(--emerald); text-transform: uppercase;">Clients</h2>
+        <button class="btn-add-new" onclick="openModal()">+ ADD NEW CUSTOMER</button>
+    </div>
+    
+    <div class="search-container" style="width: 90%; max-width: 1000px; margin-bottom: 30px;">
+        <input type="text" id="searchBar" placeholder="Search Exporters or Knitting Units..." onkeyup="filterCustomers()">
+    </div>
+
+    <div class="customer-grid" id="customerList"></div>
+    <div id="loadingMsg" class="loading">CONNECTING TO SAI KNITS CLOUD...</div>
+
+    <div class="modal" id="customerModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Add New Client</h2>
+            <input type="text" id="newCustName" placeholder="Company Name">
+            <input type="text" id="newCustGst" placeholder="GST Number">
+            <input type="text" id="newCustAddr" placeholder="Address / Location">
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-save" id="saveCustBtn" onclick="saveCustomer()">SAVE TO CLOUD</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allCustomers = [];
+
+        async function loadData() {
+            try {
+                document.getElementById("loadingMsg").style.display = "block";
+                allCustomers = await window._firebase.getCustomers();
+                renderCustomers(allCustomers);
+                document.getElementById("loadingMsg").style.display = "none";
+            } catch (err) {
+                document.getElementById("loadingMsg").innerText = "Error loading from cloud: " + err.message;
+            }
+        }
+
+        function renderCustomers(list) {
+            const container = document.getElementById("customerList");
+            container.innerHTML = "";
+            
+            if (list.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 50px; color:#555;">No customers found in cloud registry.</div>';
+                return;
+            }
+
+            list.forEach(cust => {
+                const card = document.createElement("div");
+                card.className = "customer-card";
+                card.onclick = (e) => {
+                    if (e.target.tagName !== 'BUTTON') {
+                        sessionStorage.setItem("selectedClient", JSON.stringify(cust));
+                        window.location.href = "billing.html";
+                    }
+                };
+                card.innerHTML = `
+                    <h3 style="color:var(--emerald); margin:0;">${cust.name}</h3>
+                    <p style="font-size:12px; color:#a0c0b0; margin:10px 0 5px 0;">GST: ${cust.gst}</p>
+                    <p style="font-size:12px; color:#a0c0b0; margin:0;">LOC: ${cust.addr}</p>
+                    <div class="card-actions">
+                        <button class="btn-delete" onclick="deleteCust('${cust.id}')">Delete</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterCustomers() {
+            const term = document.getElementById("searchBar").value.toLowerCase();
+            renderCustomers(allCustomers.filter(c => c.name.toLowerCase().includes(term) || c.gst.toLowerCase().includes(term)));
+        }
+
+        function openModal() { document.getElementById("customerModal").style.display = "flex"; }
+        function closeModal() { document.getElementById("customerModal").style.display = "none"; }
+
+        async function saveCustomer() {
+            const btn = document.getElementById("saveCustBtn");
+            const name = document.getElementById("newCustName").value;
+            const gst = document.getElementById("newCustGst").value;
+            const addr = document.getElementById("newCustAddr").value;
+
+            if(name && gst) {
+                btn.innerText = "UPLOADING...";
+                btn.disabled = true;
+                const newEntry = { name, gst, addr, createdAt: new Date().toISOString() };
+                try {
+                    await window._firebase.addCustomer(newEntry);
+                    await loadData();
+                    closeModal();
+                    // Clear fields
+                    document.getElementById("newCustName").value = "";
+                    document.getElementById("newCustGst").value = "";
+                    document.getElementById("newCustAddr").value = "";
+                } catch (e) {
+                    alert("Error saving: " + e.message);
+                } finally {
+                    btn.innerText = "SAVE TO CLOUD";
+                    btn.disabled = false;
+                }
+            } else {
+                alert("Please enter at least Name and GST");
+            }
+        }
+
+        async function deleteCust(id) {
+            if (confirm("Delete this customer from records?")) {
+                try {
+                    await window._firebase.deleteCustomer(id);
+                    await loadData();
+                } catch (e) {
+                    alert("Error deleting: " + e.message);
+                }
+            }
+        }
+
+        loadData();
+    </script>
+</body>
+</html>
