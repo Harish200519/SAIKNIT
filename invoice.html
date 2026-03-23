@@ -4,41 +4,42 @@
     <meta charset="UTF-8">
     <title>Invoice - SAI KNITS</title>
     <style>
-        :root { --emerald: #00ff88; --dark: #050a0a; --gray: #1e293b; }
-        body { margin: 0; background: var(--dark); font-family: 'Segoe UI', sans-serif; color: white; display: flex; flex-direction: column; align-items: center; padding: 40px 0; }
+        :root { --gold: #D4AF37; --bright-gold: #FFD700; --dark: #0a0a05; --gray: #1a1a10; }
+        body { margin: 0; background: var(--dark); font-family: 'Outfit', 'Segoe UI', sans-serif; color: white; display: flex; flex-direction: column; align-items: center; padding: 60px 0; min-height: 100vh; }
         
         .invoice-box { 
-            background: white; 
+            background: #fff; 
             color: black; 
-            width: 800px; 
-            padding: 50px; 
-            border-radius: 5px; 
-            box-shadow: 0 0 30px rgba(0,0,0,0.5); 
+            width: 850px; 
+            padding: 60px; 
+            border-radius: 10px; 
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8); 
             position: relative;
+            border-top: 10px solid var(--gold);
         }
 
-        .header { display: flex; justify-content: space-between; border-bottom: 3px solid var(--emerald); padding-bottom: 20px; }
-        .logo-section h1 { margin: 0; font-size: 32px; letter-spacing: 2px; }
-        .logo-section p { margin: 5px 0; font-size: 12px; color: #666; font-weight: bold; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #eee; padding-bottom: 30px; }
+        .logo-section h1 { margin: 0; font-size: 40px; letter-spacing: 5px; font-weight: 900; color: #000; }
+        .logo-section p { margin: 5px 0; font-size: 11px; color: #999; font-weight: bold; letter-spacing: 2px; }
 
-        .inv-details { display: flex; justify-content: space-between; margin-top: 30px; font-size: 14px; }
-        .client-info h3 { margin: 0 0 10px 0; color: #333; }
-        .client-info p { margin: 2px 0; white-space: pre-wrap; }
+        .inv-details { display: flex; justify-content: space-between; margin-top: 40px; font-size: 14px; }
+        .client-info h3 { margin: 0 0 10px 0; color: #000; font-weight: 900; }
+        .client-info p { margin: 2px 0; white-space: pre-wrap; color: #666; }
 
-        .table-section { margin-top: 40px; }
+        .table-section { margin-top: 50px; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f8fafc; text-align: left; padding: 12px; border-bottom: 2px solid #e2e8f0; font-size: 12px; text-transform: uppercase; }
-        td { padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+        th { background: #fdfdfd; text-align: left; padding: 15px; border-bottom: 2px solid #000; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 15px; border-bottom: 1px solid #eee; font-size: 14px; color: #333; }
 
-        .totals-section { margin-top: 30px; display: flex; justify-content: flex-end; }
-        .totals-table { width: 250px; }
-        .totals-table div { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
-        .grand-total { border-top: 2px solid var(--emerald); margin-top: 10px; padding-top: 10px !important; font-weight: bold; font-size: 18px !important; color: var(--emerald); }
+        .totals-section { margin-top: 40px; display: flex; justify-content: flex-end; }
+        .totals-table { width: 300px; }
+        .totals-table div { display: flex; justify-content: space-between; padding: 10px 0; font-size: 15px; }
+        .grand-total { border-top: 3px solid var(--gold); border-bottom: 3px solid var(--gold); margin-top: 15px; padding: 20px 0 !important; font-weight: 900; font-size: 22px !important; color: #000; background: rgba(212, 175, 55, 0.05); }
 
-        .btn-group { margin-top: 40px; display: flex; gap: 20px; }
-        .btn { padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
-        .btn-print { background: var(--emerald); color: black; }
-        .btn-back { background: var(--gray); color: white; }
+        .btn-group { margin-top: 50px; display: flex; gap: 20px; }
+        .btn { padding: 15px 40px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; text-transform: uppercase; letter-spacing: 2px; }
+        .btn-print { background: linear-gradient(135deg, var(--gold), var(--bright-gold)); color: black; box-shadow: 0 10px 20px var(--glow); }
+        .btn-back { background: var(--gray); color: #d4af37; border: 1px solid var(--gold); }
         
         @media print {
             body { background: white; padding: 0; }
