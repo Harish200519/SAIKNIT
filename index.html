@@ -6,16 +6,18 @@
     <title>SAI KNITS | Premium Textile Management</title>
     <style>
         :root { 
-            --emerald: #00ff88; 
-            --dark-bg: #050a0a; 
-            --glow: rgba(0, 255, 136, 0.3);
+            --gold: #D4AF37; 
+            --bright-gold: #FFD700;
+            --dark-bg: #0a0a05; 
+            --glow: rgba(212, 175, 55, 0.3);
+            --glass: rgba(20, 20, 10, 0.8);
         }
 
         body { 
             margin: 0; 
             background: var(--dark-bg); 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            color: white; 
+            font-family: 'Outfit', 'Segoe UI', sans-serif; 
+            color: #fff; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
@@ -23,130 +25,144 @@
             overflow: hidden; 
         }
 
-        /* Glowing Navigation Bar */
+        /* Premium Gold Navigation */
         .navbar { 
             width: 100%; 
             display: flex; 
             justify-content: center; 
             gap: 25px; 
             padding: 20px 0; 
-            background: rgba(0, 20, 15, 0.8); 
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--emerald); 
-            box-shadow: 0 0 20px var(--glow);
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3); 
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
             position: fixed; 
             top: 0; 
             z-index: 1000; 
         }
 
         .navbar a { 
-            color: #d1ffd1; 
+            color: #eee; 
             text-decoration: none; 
-            padding: 8px 20px; 
-            border-radius: 20px; 
-            transition: 0.4s; 
-            font-weight: bold; 
+            padding: 10px 25px; 
+            border-radius: 30px; 
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            font-weight: 600; 
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 14px;
+            letter-spacing: 1.5px;
+            font-size: 13px;
         }
 
         .navbar a:hover { 
-            background: var(--emerald); 
+            background: linear-gradient(135deg, var(--gold), var(--bright-gold));
             color: #000; 
-            box-shadow: 0 0 25px var(--emerald); 
+            box-shadow: 0 0 30px var(--glow); 
+            transform: translateY(-2px);
         }
 
-        /* Animated Background Elements */
+        /* Animated Gold Background */
         .glow-circle {
             position: absolute;
-            width: 400px;
-            height: 400px;
+            width: 500px;
+            height: 500px;
             background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
             z-index: 0;
-            filter: blur(50px);
-            animation: move 15s infinite alternate;
+            filter: blur(60px);
+            animation: move 20s infinite alternate;
         }
 
         @keyframes move {
-            from { transform: translate(-20%, -20%); }
-            to { transform: translate(20%, 20%); }
+            from { transform: translate(-30%, -30%) scale(1); }
+            to { transform: translate(30%, 30%) scale(1.2); }
         }
 
         .bg-text { 
             position: absolute; 
             width: 100%; 
             text-align: center; 
-            font-size: 15vw; 
+            font-size: 18vw; 
             font-weight: 900; 
-            color: rgba(0, 255, 136, 0.03); 
+            color: rgba(212, 175, 55, 0.05); 
             text-transform: uppercase;
             user-select: none; 
             z-index: 1; 
+            letter-spacing: -5px;
         }
 
-        /* Main Glass Container */
+        /* Attractive Main Container */
         .container { 
             position: relative; 
             z-index: 2; 
-            background: rgba(10, 25, 20, 0.7); 
-            backdrop-filter: blur(15px); 
-            padding: 70px 50px; 
-            border-radius: 30px; 
+            background: rgba(30, 30, 15, 0.6);
+            backdrop-filter: blur(20px); 
+            padding: 80px 60px; 
+            border-radius: 40px; 
             text-align: center; 
-            border: 1px solid rgba(0, 255, 136, 0.2); 
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 255, 136, 0.1); 
-            margin-top: 180px; 
-            max-width: 500px;
+            border: 1px solid rgba(212, 175, 55, 0.2); 
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.1); 
+            margin-top: 200px; 
+            max-width: 550px;
+            animation: fadeIn 1.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         h1 { 
-            font-size: 50px; 
-            color: var(--emerald); 
+            font-size: 60px; 
+            background: linear-gradient(to right, #D4AF37, #FFD700, #F0E68C, #D4AF37);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin: 0; 
-            text-shadow: 0 0 20px var(--emerald);
-            letter-spacing: 4px;
+            filter: drop-shadow(0 0 15px var(--glow));
+            letter-spacing: 8px;
+            font-weight: 900;
         }
 
         p { 
-            margin-top: 15px; 
-            color: #a0c0b0; 
-            font-size: 18px;
+            margin-top: 20px; 
+            color: #d4cfb0; 
+            font-size: 20px;
             font-weight: 300;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            opacity: 0.8;
         }
 
-        /* Glowing Button */
+        /* Floating Gold Button */
         .main-btn { 
-            margin-top: 40px; 
-            padding: 18px 50px; 
+            margin-top: 50px; 
+            padding: 20px 60px; 
             background: transparent; 
-            border: 2px solid var(--emerald); 
-            color: var(--emerald); 
-            border-radius: 50px; 
+            border: 2px solid var(--gold); 
+            color: var(--gold); 
+            border-radius: 60px; 
             cursor: pointer; 
-            transition: 0.4s; 
+            transition: 0.5s; 
             font-weight: bold; 
-            font-size: 18px;
+            font-size: 20px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             position: relative;
-            overflow: hidden;
+            z-index: 10;
         }
 
         .main-btn:hover { 
-            background: var(--emerald); 
-            color: #050a0a; 
-            box-shadow: 0 0 40px var(--emerald); 
-            transform: translateY(-5px); 
+            background: linear-gradient(135deg, var(--gold), var(--bright-gold));
+            color: #000; 
+            box-shadow: 0 15px 40px var(--glow); 
+            transform: translateY(-8px) scale(1.05); 
         }
 
         .footer {
             position: fixed;
-            bottom: 20px;
-            font-size: 12px;
-            color: rgba(0, 255, 136, 0.4);
-            letter-spacing: 2px;
+            bottom: 30px;
+            font-size: 14px;
+            color: rgba(212, 175, 55, 0.5);
+            letter-spacing: 3px;
+            font-weight: 300;
         }
     </style>
 </head>
